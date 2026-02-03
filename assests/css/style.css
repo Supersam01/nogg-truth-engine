@@ -1,132 +1,144 @@
-/* TRUTH ENGINE - MODERN ANALYTICAL UI */
 :root {
-    --bg: #0d1117;
-    --panel: #161b22;
-    --border: #30363d;
-    --accent: #58a6ff;
-    --success: #238636;
-    --warning: #d29922;
-    --danger: #da3633;
-    --text: #c9d1d9;
+    --bg: #080a0f;
+    --panel: #11141d;
+    --input-focus: #1a1f2b;
+    --accent: #00d4ff;
+    --success: #00ff88;
+    --warning: #ffb300;
+    --danger: #ff4d4d;
+    --text: #e0e6ed;
+    --border: #2d3446;
 }
 
 body {
     background-color: var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     margin: 0;
-    padding: 20px;
+    padding: 40px;
     display: flex;
     justify-content: center;
 }
 
-.app-wrapper {
+.engine-container {
     width: 100%;
-    max-width: 1100px;
+    max-width: 1200px;
 }
 
 header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+/* THE GRID - High Spacing */
+#gameBody {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 30px;
+}
+
+/* THE CARD - The Engine Module */
+.game-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.game-card:hover { border-color: var(--accent); }
+
+/* Header within Card */
+.card-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
 
-.accent { color: var(--accent); }
+.rank-tag {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--accent);
+}
 
-.summary-bar {
+/* INPUT SPACE - Large and Clear */
+.input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.data-field {
     display: flex;
-    gap: 15px;
+    flex-direction: column;
 }
 
-.stat {
-    background: var(--panel);
-    padding: 8px 15px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    font-size: 0.8rem;
-    font-weight: bold;
-}
-
-.toolbar {
-    margin-bottom: 20px;
-    display: flex;
-    gap: 10px;
-}
-
-/* Table Styling */
-.engine-room {
-    background: var(--panel);
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th {
-    background: #21262d;
-    color: #8b949e;
+.data-field label {
     font-size: 0.7rem;
-    padding: 12px;
+    font-weight: bold;
+    color: #6a768e;
+    margin-bottom: 8px;
     text-transform: uppercase;
 }
 
-td {
-    padding: 10px;
-    border-bottom: 1px solid var(--border);
-    text-align: center;
-}
-
-/* Input Optimization */
-.input-pair {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    align-items: center;
-}
-
 input {
-    background: #0d1117;
+    background: #000;
     border: 1px solid var(--border);
-    color: var(--accent);
-    padding: 4px;
-    border-radius: 4px;
-    width: 60px;
-    text-align: center;
-}
-
-input:focus { border-color: var(--accent); outline: none; }
-
-/* Status Logic */
-tr.accept { background: rgba(35, 134, 54, 0.1); border-left: 4px solid var(--success); }
-tr.warn { background: rgba(210, 153, 34, 0.05); border-left: 4px solid var(--warning); }
-tr.exclude { opacity: 0.4; filter: grayscale(1); }
-
-/* Rank Pop */
-.rank-cell { font-weight: bold; font-size: 1.1rem; }
-tr.accept .rank-cell { color: var(--success); }
-
-/* Outcome Buttons */
-.action-cell { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-.result-display { font-weight: bold; font-size: 0.75rem; }
-
-button {
-    cursor: pointer;
-    font-weight: bold;
-    border-radius: 4px;
-    border: none;
-    padding: 8px 16px;
+    color: #fff;
+    padding: 12px;
+    font-size: 1.1rem;
+    border-radius: 8px;
     transition: 0.2s;
 }
 
-.btn-main { background: var(--success); color: white; }
-.btn-sub { background: #30363d; color: var(--text); }
+input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--input-focus);
+}
 
-.win-btn { background: var(--success); color: white; padding: 4px 8px; font-size: 0.7rem; }
-.loss-btn { background: var(--danger); color: white; padding: 4px 8px; font-size: 0.7rem; }
+/* COLORING - Aggressive Feedback */
+.game-card.accept { 
+    border-color: var(--success); 
+    box-shadow: inset 0 0 15px rgba(0, 255, 136, 0.1);
+}
+.game-card.accept .status-label { color: var(--success); text-shadow: 0 0 10px var(--success); }
 
-button:disabled { opacity: 0.2; cursor: not-allowed; }
+.game-card.warn { border-color: var(--warning); }
+.game-card.warn .status-label { color: var(--warning); }
+
+.game-card.exclude { opacity: 0.3; filter: saturate(0); }
+
+/* Bottom Action Zone */
+.card-bottom {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.status-label { font-weight: 800; font-size: 0.9rem; }
+
+.outcome-btns button {
+    padding: 8px 16px;
+    margin-left: 5px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.win-btn { background: var(--success); color: #000; }
+.loss-btn { background: var(--danger); color: #fff; }
+
+button:disabled { opacity: 0.1; cursor: not-allowed; }
