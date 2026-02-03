@@ -1,91 +1,59 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #121212;
-    color: #fff;
-    margin: 0;
-    padding: 10px;
+    font-family: 'Courier New', monospace; /* Engine/Terminal vibe */
+    background-color: #0a0a0a;
+    color: #eee;
+    padding: 20px;
 }
 
-header h1 {
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.controls {
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.controls button {
-    margin: 0 5px;
-    padding: 8px 15px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 5px;
-    border: none;
-}
-
-.games-section {
-    overflow-x: auto;
+.session-summary {
+    display: flex;
+    justify-content: space-around;
+    background: #1a1a1a;
+    padding: 15px;
+    border: 1px solid #333;
+    border-radius: 4px;
     margin-bottom: 15px;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 1200px;
+    background: #111;
 }
 
 th, td {
-    border: 1px solid #555;
-    padding: 5px;
+    border: 1px solid #333;
+    padding: 8px;
     text-align: center;
+}
+
+/* Vertical grouping to save space */
+.input-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
 }
 
 input {
     width: 60px;
+    background: #000;
+    border: 1px solid #444;
+    color: #00ffcc;
+    padding: 3px;
     text-align: center;
-    border-radius: 4px;
-    border: none;
 }
 
-button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+/* Status colors that actually pop */
+tr.accept { border-left: 8px solid #00ff00; background: #001a00; }
+tr.warn { border-left: 8px solid #ffcc00; background: #1a1500; }
+tr.exclude { opacity: 0.3; grayscale: 1; }
+
+.rank-1 { background: #002233 !important; border: 1px solid #00ffcc; }
+
+button {
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    border: 1px solid #444;
 }
-
-/* STATUS COLORS */
-tr.accept {
-    background-color: #002200;
-}
-
-tr.warn {
-    background-color: #332200;
-}
-
-tr.exclude {
-    opacity: 0.4;
-    text-decoration: line-through;
-}
-
-/* TOP RANK HIGHLIGHTS */
-tr.rank-1 { background-color: #003300; }
-tr.rank-2 { background-color: #004400; }
-tr.rank-3 { background-color: #005500; }
-
-/* DECISION LABELS */
-.calcHist { color: #00ffcc; font-weight: bold; }
-.calc { color: #00ff00; font-weight: bold; }
-.warn { color: #ffcc00; font-weight: bold; }
-
-/* SESSION SUMMARY */
-.session-summary {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 10px;
-    padding: 8px;
-    background-color: #1e1e1e;
-    border-radius: 8px;
-    font-weight: bold;
-}
-.session-summary span { color: #fff; }
