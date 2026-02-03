@@ -1,108 +1,83 @@
-/********************
+/**
  * DATABASE.JS
- * Pattern memory & feedback for NO GG Truth Engine
- ********************/
-
-/**
- * LocalStorage key
+ * Handles persistent storage and pattern recognition.
  */
-const PATTERN_DB_KEY = "noggPatterns";
 
-/**
- * Get database from LocalStorage
- */
-function getDatabase() {
-    let db = localStorage.getItem(PATTERN_DB_KEY);
-    if(!db) return {};
-    return JSON.parse(db);
-}
+const Database = {
+    DB_KEY: "nogg_truth_data",
 
-/**
- * Save database to LocalStorage
- */
-function saveDatabase(db) {
-    localStorage.setItem(PATTERN_DB_KEY, JSON.stringify(db));
-}
+    /**
+     * Fetch the entire history from LocalStorage
+     */
+    getDB: () => {
+        const data = localStorage.getItem(Database.DB_KEY);
+        return data ? JSON.parse(data) : {};
+    },
 
-/**
- * Add or update a pattern
- * game = {
- *   patternID: string,
- *   result: "win"|"loss" (optional)
- * }
- */
-function updatePattern(game) {
-    let db = getDatabase();
+    /**
+     * Save updated history back to LocalStorage
+     */
+    saveDB: (db) => {
+        localStorage.setItem(Database.DB_KEY, JSON.stringify(db));
+    },
 
-    if(!db[game.patternID]){
-        db[game.patternID] = { seen:0, win:0, loss:0, lastResult:null, lastDate:null };
+    /**
+     * Logs a pattern or records a win/loss result
+     */
+    recordResult: (patternID, result = null) => {
+        const db = Database.getDB();
+
+        if (!db[patternID]) {
+            db[patternID] = { 
+                seen: 0, 
+                wins: 0, 
+                losses: 0, 
+                lastResult: null,
+                timestamp: Date.now() 
+            };
+        }
+
+        db[patternID].seen += 1;
+        
+        if (result === 'win') db[patternID].wins += 1;
+        if (result === 'loss') db[patternID].losses += 1;
+        
+        db[patternID].lastResult = result;
+        db[patternID].timestamp = Date.now();
+
+        Database.saveDB(db);
+    },
+
+    /**
+     * Checks if current engine prediction matches historical data
+     */
+    checkHistory: (patternID) => {
+        const db = Database.getDB();
+        const pattern = db[patternID];
+
+        if (!pattern || pattern.seen < 1) {
+            return { exists: false, winRate: 0, status: 'NEW' };
+        }
+
+        const winRate = pattern.wins / (pattern.wins + pattern.losses || 1);
+        
+        return {
+            exists: true,
+            winRate: winRate,
+            seen: pattern.seen,
+            // Historical agreement if win rate is above 65%
+            confirmed: winRate >= 0.65 
+        };
+    },
+
+    /**
+     * Clear all historical data
+     */
+    clearHistory: () => {
+        if (confirm("Delete all historical pattern data?")) {
+            localStorage.removeItem(Database.DB_KEY);
+        }
     }
+};
 
-    db[game.patternID].seen += 1;
-
-    if(game.result === "win") db[game.patternID].win += 1;
-    if(game.result === "loss") db[game.patternID].loss += 1;
-
-    db[game.patternID].lastResult = game.result || null;
-    db[game.patternID].lastDate = new Date().toISOString();
-
-    saveDatabase(db);
-}
-
-/**
- * Record manual win/loss for a game
- */
-function recordResult(patternID, result) {
-    if(result !== "win" && result !== "loss") return;
-    let db = getDatabase();
-
-    if(!db[patternID]){
-        db[patternID] = { seen:0, win:0, loss:0, lastResult:null, lastDate:null };
-    }
-
-    db[patternID].seen +=1;
-    if(result === "win") db[patternID].win +=1;
-    if(result === "loss") db[patternID].loss +=1;
-
-    db[patternID].lastResult = result;
-    db[patternID].lastDate = new Date().toISOString();
-
-    saveDatabase(db);
-}
-
-/**
- * Get pattern history
- * Returns object {seen, win, loss, lastResult, lastDate}
- * If pattern not found, returns null
- */
-function getPatternHistory(patternID) {
-    let db = getDatabase();
-    return db[patternID] || null;
-}
-
-/**
- * Check if history confirms the calculation
- * derivedNoGG > bookieNoGG = system predicts NO GG
- * Returns {exists: boolean, agreement: boolean, winRate: number}
- */
-function checkHistory(patternID, systemPrediction) {
-    let pattern = getPatternHistory(patternID);
-    if(!pattern) return {exists:false, agreement:true, winRate:0};
-
-    // agreement if history win rate > 0.65
-    let winRate = pattern.win / pattern.seen;
-    let agreement = (systemPrediction && winRate >= 0.65);
-
-    return {
-        exists: true,
-        agreement: agreement,
-        winRate: winRate
-    };
-}
-
-/**
- * Reset database (optional)
- */
-function resetDatabase() {
-    localStorage.removeItem(PATTERN_DB_KEY);
-}
+window.Database = Database;
