@@ -1,94 +1,63 @@
-/********************
+/**
  * DECISION.JS
- * Decision & ranking logic for NO GG Truth Engine
- ********************/
-
-/**
- * Thresholds (locked rules)
+ * The final arbiter of status, rank, and labeling.
  */
-const CONFIDENCE_THRESHOLD_EXCLUDE = 0.04;
-const CONFIDENCE_THRESHOLD_ACCEPT = 0.07;
-const HISTORY_BOOST_MAX = 0.20; // max 20% boost from history
 
-/**
- * Determine game status based on confidence
- * Returns 'accept', 'warn', 'exclude'
- */
-function determineStatus(confidence) {
-    if(confidence < CONFIDENCE_THRESHOLD_EXCLUDE) return 'exclude';
-    if(confidence < CONFIDENCE_THRESHOLD_ACCEPT) return 'warn';
-    return 'accept';
-}
+const Decision = {
+    // Thresholds for the "Truth" logic
+    THRESHOLDS: {
+        EXCLUDE: 0.03, // Under 3% value difference = Ignore
+        ACCEPT: 0.07,  // Over 7% value difference = High Confidence
+        HISTORY_BOOST: 0.15 // 15% rank boost for proven patterns
+    },
 
-/**
- * Compute rank score
- * confidence: number
- * historyWinRate: decimal 0-1 (optional)
- */
-function computeRankScore(confidence, historyWinRate=null) {
-    let boost = 0;
-    if(historyWinRate !== null && historyWinRate >= 0.65) {
-        boost = HISTORY_BOOST_MAX;
+    /**
+     * Determines if a game is 'accept', 'warn', or 'exclude'
+     */
+    getStatus: (confidence) => {
+        if (confidence >= Decision.THRESHOLDS.ACCEPT) return 'accept';
+        if (confidence >= Decision.THRESHOLDS.EXCLUDE) return 'warn';
+        return 'exclude';
+    },
+
+    /**
+     * Generates the rank score using confidence and history
+     */
+    getRankScore: (confidence, history) => {
+        let score = confidence;
+        
+        // If history confirms the pattern is a winner, boost the rank
+        if (history.exists && history.confirmed) {
+            score += Decision.THRESHOLDS.HISTORY_BOOST;
+        }
+        
+        return score;
+    },
+
+    /**
+     * Processes the entire array of games to rank them against each other
+     */
+    rankGames: (games) => {
+        // 1. Calculate scores and status for all
+        games.forEach(game => {
+            game.status = Decision.getStatus(game.confidence);
+            game.rankScore = Decision.getRankScore(game.confidence, game.history);
+        });
+
+        // 2. Sort by rankScore (highest first)
+        const sorted = [...games].sort((a, b) => b.rankScore - a.rankScore);
+
+        // 3. Assign numerical ranks to the sorted list
+        sorted.forEach((game, index) => {
+            if (game.status !== 'exclude') {
+                game.rank = index + 1;
+            } else {
+                game.rank = '—';
+            }
+        });
+
+        return sorted;
     }
-    return confidence * (1 + boost);
-}
+};
 
-/**
- * Determine decision label
- * status: 'accept'|'warn'|'exclude'
- * historyExists: boolean
- * historyAgreement: boolean (true = history confirms)
- */
-function determineDecisionLabel(status, historyExists=false, historyAgreement=true) {
-    if(status === 'exclude') return '—'; // excluded games have no label
-
-    if(!historyExists) return 'CALCULATION ONLY';
-
-    if(historyAgreement) return 'CALCULATION CONFIRMED BY HISTORY';
-
-    return 'CALCULATION WITH HISTORICAL WARNING';
-}
-
-/**
- * Process all games for status, rank, label
- * Input: array of game objects
- * game = {
- *   gameOdds: {...},
- *   derivedNoGG: number,
- *   bookieNoGG: number,
- *   confidence: number,
- *   historyWinRate: optional,
- *   historyExists: boolean
- * }
- */
-function processGames(gamesArray) {
-    // Step 1: determine status
-    gamesArray.forEach(game => {
-        game.status = determineStatus(game.confidence);
-        game.decisionLabel = determineDecisionLabel(
-            game.status,
-            game.historyExists,
-            game.historyAgreement
-        );
-        if(game.status === 'accept') {
-            game.rankScore = computeRankScore(game.confidence, game.historyWinRate);
-        } else {
-            game.rankScore = 0; // excluded or warn with low confidence
-        }
-    });
-
-    // Step 2: sort accepted/warn games by rankScore descending
-    gamesArray.sort((a,b) => b.rankScore - a.rankScore);
-
-    // Step 3: assign rank numbers
-    let rank = 1;
-    gamesArray.forEach(game => {
-        if(game.status === 'accept' || game.status === 'warn') {
-            game.rank = rank++;
-        } else {
-            game.rank = '—';
-        }
-    });
-
-    return gamesArray;
-}
+window.Decision = Decision;
