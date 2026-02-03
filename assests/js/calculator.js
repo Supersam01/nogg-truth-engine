@@ -1,71 +1,69 @@
 /**
  * CALCULATOR.JS
- * The core logic for deriving "Odd Truths" from bookmaker data.
+ * The proprietary logic for deriving the "No GG" probability.
  */
 
 const Calculator = {
     /**
-     * The heart of the engine: Computes the Derived No GG Probability
+     * Compares bookmaker price against calculated defensive probability.
      */
-    calculateDerivedNoGG: (gameOdds) => {
-        // Probabilities of "No" or "Under" outcomes
-        const probs = {
-            bttsNo: Utils.oddToProb(gameOdds.bttsNo),
-            u25: Utils.oddToProb(gameOdds.u25),
-            u15: Utils.oddToProb(gameOdds.u15),
-            // Team failing to score (1 - Prob of scoring)
-            homeFail: gameOdds.home05 ? (1 - Utils.oddToProb(gameOdds.home05)) : 0,
-            awayFail: gameOdds.away05 ? (1 - Utils.oddToProb(gameOdds.away05)) : 0,
-            handicap: Utils.oddToProb(gameOdds.handicap)
-        };
+    calculateDerivedNoGG: (odds) => {
+        // Convert all relevant markets to probabilities
+        const pBttsNo = Utils.toProb(odds.bttsNo);
+        const pU25    = Utils.toProb(odds.u25);
+        const pU15    = Utils.toProb(odds.u15);
+        const pHCS    = Utils.toProb(odds.homeCS);
+        const pACS    = Utils.toProb(odds.awayCS);
+        const pHcap   = Utils.toProb(odds.handicap);
 
-        // Component Scores
-        const components = [
-            { val: Utils.avg([probs.homeFail, probs.awayFail]), weight: 0.35 }, // Team Fail Score
-            { val: Utils.avg([probs.u25, probs.u15]), weight: 0.30 },          // Under Goals Score
-            { val: probs.bttsNo, weight: 0.20 },                               // Raw BTTS No Score
-            { val: probs.handicap, weight: 0.15 }                             // Handicap Proxy
+        /**
+         * The Engine uses 4 distinct logical "Pillars":
+         * 1. Defensive Floor (U2.5 and U1.5)
+         * 2. Zero-Score Proxy (Home/Away Clean Sheets)
+         * 3. Market baseline (Raw BTTS No)
+         * 4. Spread context (Handicap)
+         */
+        const values = [
+            Utils.avg([pU25, pU15]),   // Pillar 1: Under Goals
+            Utils.avg([pHCS, pACS]),   // Pillar 2: Clean Sheet Probability
+            pBttsNo,                   // Pillar 3: BTTS Market
+            pHcap                      // Pillar 4: Handicap
         ];
 
-        // Dynamic Weighting: Ignore components with 0 or null values
-        let activeWeightsSum = 0;
-        let weightedResult = 0;
+        const weights = [0.40, 0.30, 0.20, 0.10];
 
-        components.forEach(c => {
-            if (c.val > 0) {
-                weightedResult += (c.val * c.weight);
-                activeWeightsSum += c.weight;
-            }
-        });
-
-        // Normalize if data is missing, otherwise return weighted avg
-        return activeWeightsSum > 0 ? (weightedResult / activeWeightsSum) : 0;
+        // Result is the weighted average of all defensive indicators
+        return Utils.weightedAvg(values, weights);
     },
 
     /**
-     * Calculates the "Confidence"
-     * Difference between our derived math and the bookie's raw odds
+     * Determines the quality of the input data. 
+     * More inputs = higher confidence multiplier.
      */
-    computeConfidence: (derivedNoGG, rawBttsOdd, quality) => {
-        const bookieProb = Utils.oddToProb(rawBttsOdd);
-        if (!bookieProb || quality === 0) return 0;
+    computeDataQuality: (odds) => {
+        const totalFields = 6;
+        const filled = Object.values(odds).filter(v => v !== null && v > 0).length;
         
-        // Confidence is the "Value" found by the engine
-        return (derivedNoGG - bookieProb) * quality;
+        // Return a multiplier between 0.5 and 1.0
+        return 0.5 + (filled / totalFields) * 0.5;
     },
 
     /**
-     * Rates the reliability of the input data
+     * Confidence = (Our Probability - Bookie Probability) * Quality
      */
-    computeDataQuality: (gameOdds) => {
-        const keys = Object.keys(gameOdds);
-        const filled = keys.filter(k => Utils.isValidOdd(gameOdds[k])).length;
-        
-        if (filled >= 6) return 1.0;  // High Reliability
-        if (filled >= 4) return 0.7;  // Medium Reliability
-        if (filled >= 2) return 0.4;  // Low Reliability
-        return 0;                     // Garbage in, garbage out
+    computeConfidence: (derivedProb, rawBttsOdd, quality) => {
+        const bookieProb = Utils.toProb(rawBttsOdd);
+        if (!bookieProb) return 0;
+
+        const edge = derivedProb - bookieProb;
+        return edge * quality;
     }
+};
+
+// Internal avg helper
+Utils.avg = (arr) => {
+    const valid = arr.filter(v => v > 0);
+    return valid.length ? (valid.reduce((a, b) => a + b, 0) / valid.length) : 0;
 };
 
 window.Calculator = Calculator;
