@@ -1,59 +1,132 @@
-body {
-    font-family: 'Courier New', monospace; /* Engine/Terminal vibe */
-    background-color: #0a0a0a;
-    color: #eee;
-    padding: 20px;
+/* TRUTH ENGINE - MODERN ANALYTICAL UI */
+:root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --success: #238636;
+    --warning: #d29922;
+    --danger: #da3633;
+    --text: #c9d1d9;
 }
 
-.session-summary {
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
     display: flex;
-    justify-content: space-around;
-    background: #1a1a1a;
-    padding: 15px;
-    border: 1px solid #333;
-    border-radius: 4px;
-    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.app-wrapper {
+    width: 100%;
+    max-width: 1100px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.accent { color: var(--accent); }
+
+.summary-bar {
+    display: flex;
+    gap: 15px;
+}
+
+.stat {
+    background: var(--panel);
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.toolbar {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* Table Styling */
+.engine-room {
+    background: var(--panel);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow: hidden;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    background: #111;
 }
 
-th, td {
-    border: 1px solid #333;
-    padding: 8px;
+th {
+    background: #21262d;
+    color: #8b949e;
+    font-size: 0.7rem;
+    padding: 12px;
+    text-transform: uppercase;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
     text-align: center;
 }
 
-/* Vertical grouping to save space */
+/* Input Optimization */
 .input-pair {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     align-items: center;
 }
 
 input {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: 4px;
+    border-radius: 4px;
     width: 60px;
-    background: #000;
-    border: 1px solid #444;
-    color: #00ffcc;
-    padding: 3px;
     text-align: center;
 }
 
-/* Status colors that actually pop */
-tr.accept { border-left: 8px solid #00ff00; background: #001a00; }
-tr.warn { border-left: 8px solid #ffcc00; background: #1a1500; }
-tr.exclude { opacity: 0.3; grayscale: 1; }
+input:focus { border-color: var(--accent); outline: none; }
 
-.rank-1 { background: #002233 !important; border: 1px solid #00ffcc; }
+/* Status Logic */
+tr.accept { background: rgba(35, 134, 54, 0.1); border-left: 4px solid var(--success); }
+tr.warn { background: rgba(210, 153, 34, 0.05); border-left: 4px solid var(--warning); }
+tr.exclude { opacity: 0.4; filter: grayscale(1); }
+
+/* Rank Pop */
+.rank-cell { font-weight: bold; font-size: 1.1rem; }
+tr.accept .rank-cell { color: var(--success); }
+
+/* Outcome Buttons */
+.action-cell { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.result-display { font-weight: bold; font-size: 0.75rem; }
 
 button {
-    padding: 5px 10px;
     cursor: pointer;
-    border-radius: 3px;
-    border: 1px solid #444;
+    font-weight: bold;
+    border-radius: 4px;
+    border: none;
+    padding: 8px 16px;
+    transition: 0.2s;
 }
+
+.btn-main { background: var(--success); color: white; }
+.btn-sub { background: #30363d; color: var(--text); }
+
+.win-btn { background: var(--success); color: white; padding: 4px 8px; font-size: 0.7rem; }
+.loss-btn { background: var(--danger); color: white; padding: 4px 8px; font-size: 0.7rem; }
+
+button:disabled { opacity: 0.2; cursor: not-allowed; }
