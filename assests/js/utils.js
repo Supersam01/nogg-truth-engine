@@ -1,57 +1,62 @@
 /**
  * UTILS.JS
- * Core utility functions for data normalization and validation.
+ * Ensures data integrity and pattern normalization.
  */
 
 const Utils = {
     /**
-     * Rounds odds to the nearest 0.05 (Bookmaker standard)
-     * Helps in pattern matching consistency.
+     * Normalizes inputs: converts strings/empty to numbers or null
+     */
+    parse: (val) => {
+        const n = parseFloat(val);
+        return isNaN(n) ? null : n;
+    },
+
+    /**
+     * Standardizes odds to 0.05 increments for pattern matching
      */
     roundOdd: (odd) => {
-        if (!odd || isNaN(odd)) return null;
+        if (!odd) return 0;
         return Math.round(odd * 20) / 20;
     },
 
     /**
-     * Basic validation for odds
+     * Core Math: Odds to Implied Probability
      */
-    isValidOdd: (value) => {
-        return value !== null && 
-               value !== undefined && 
-               !isNaN(value) && 
-               Number(value) > 1;
+    toProb: (odd) => {
+        return (odd && odd > 1) ? (1 / odd) : 0;
     },
 
     /**
-     * Converts Odds to Implied Probability
-     * Formula: P = 1 / Decimal Odd
+     * Weighted Average Helper
+     * Ignores zeroes so missing data doesn't tank the score.
      */
-    oddToProb: (odd) => {
-        if (!Utils.isValidOdd(odd)) return 0;
-        return 1 / Number(odd);
+    weightedAvg: (values, weights) => {
+        let totalWeight = 0;
+        let weightedSum = 0;
+
+        values.forEach((v, i) => {
+            if (v > 0) {
+                weightedSum += (v * weights[i]);
+                totalWeight += weights[i];
+            }
+        });
+
+        return totalWeight > 0 ? (weightedSum / totalWeight) : 0;
     },
 
     /**
-     * Averages an array while ignoring null/invalid values
+     * Generates the unique signature for the Pattern Database
      */
-    avg: (arr) => {
-        const valid = arr.filter(v => v !== null && !isNaN(v) && v !== 0);
-        if (valid.length === 0) return 0;
-        return valid.reduce((a, b) => a + b, 0) / valid.length;
-    },
-
-    /**
-     * Generates a unique string key based on rounded odds 
-     * for historical pattern tracking.
-     */
-    generatePatternID: (gameOdds) => {
-        const keys = ['bttsNo', 'u25', 'u15', 'home05', 'away05', 'handicap'];
-        return keys
-            .map(k => Utils.roundOdd(gameOdds[k]) || '0')
-            .join('-');
+    generatePatternID: (odds) => {
+        // We use BTTS, U25, and Handicap as the primary DNA of a game
+        const sig = [
+            Utils.roundOdd(odds.bttsNo),
+            Utils.roundOdd(odds.u25),
+            Utils.roundOdd(odds.handicap)
+        ];
+        return sig.join('|');
     }
 };
 
-// Export for use in other files
 window.Utils = Utils;
