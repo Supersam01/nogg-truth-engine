@@ -2,43 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NO GG Truth Engine</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <header>
-        <h1>NO GG <span style="color: #00ffcc;">TRUTH ENGINE</span></h1>
-    </header>
 
-    <div class="session-summary">
-        <span>Accepted: <strong id="acceptedCount">0</strong></span>
-        <span>Warning: <strong id="warnCount">0</strong></span>
-        <span>Excluded: <strong id="excludedCount">0</strong></span>
-    </div>
+    <div class="app-wrapper">
+        <header>
+            <h1>NO GG <span class="accent">TRUTH ENGINE</span></h1>
+            <div class="summary-bar">
+                <div class="stat">ACCEPTED: <span id="accCount">0</span></div>
+                <div class="stat">EXCLUDED: <span id="exCount">0</span></div>
+            </div>
+        </header>
 
-    <div class="controls">
-        <button id="decideBtn" style="background: #00ffcc; color: #000;">RUN ANALYSIS</button>
-        <button id="resetBtn">RESET ALL</button>
-    </div>
+        <nav class="toolbar">
+            <button id="decideBtn" class="btn-main">RUN ENGINE</button>
+            <button id="resetBtn" class="btn-sub">RESET</button>
+        </nav>
 
-    <div class="games-section">
-        <table id="gamesTable">
-            <thead>
-                <tr>
-                    <th>Game</th>
-                    <th>BTTS No</th>
-                    <th>U2.5 / U1.5</th>
-                    <th>H / A 0.5</th>
-                    <th>H / A CS</th>
-                    <th>Handicap</th>
-                    <th>Status</th>
-                    <th>Rank</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="gameBody">
-                </tbody>
-        </table>
+        <main class="engine-room">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>BTTS NO</th>
+                        <th>U2.5 / U1.5</th>
+                        <th>H / A 0.5</th>
+                        <th>HANDICAP</th>
+                        <th>STATUS</th>
+                        <th>RANK</th>
+                        <th>OUTCOME</th>
+                    </tr>
+                </thead>
+                <tbody id="gameBody">
+                    </tbody>
+            </table>
+        </main>
     </div>
 
     <script src="assets/js/utils.js"></script>
