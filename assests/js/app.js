@@ -59,10 +59,13 @@ document.addEventListener("DOMContentLoaded", () => {
         gamesArray.forEach(game => {
             const tr = game.trElement;
 
+            // Clear previous classes
+            tr.classList.remove("rank-1","rank-2","rank-3","accept","warn","exclude");
+
             // STATUS
             let statusCell = tr.querySelector(".status");
             statusCell.textContent = game.status.toUpperCase();
-            statusCell.className = "status " + game.status;
+            tr.classList.add(game.status);
 
             // DECISION
             let decisionCell = tr.querySelector(".decision");
@@ -79,6 +82,11 @@ document.addEventListener("DOMContentLoaded", () => {
             // RANK
             let rankCell = tr.querySelector(".rank");
             rankCell.textContent = game.rank;
+
+            // Highlight top 3 ranked games
+            if(game.rank === 1) tr.classList.add("rank-1");
+            if(game.rank === 2) tr.classList.add("rank-2");
+            if(game.rank === 3) tr.classList.add("rank-3");
 
             // RESULT BUTTONS
             let winBtn = tr.querySelector(".winBtn");
@@ -105,6 +113,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 updatePattern({patternID: game.patternID});
             }
         });
+
+        // Update session summary
+        updateSessionSummary(gamesArray);
     });
 
     // RESET BUTTON
@@ -124,6 +135,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 winBtn.onclick = null;
                 lossBtn.onclick = null;
             });
+
+            // Reset session summary
+            document.getElementById("acceptedCount").textContent = "0";
+            document.getElementById("warnCount").textContent = "0";
+            document.getElementById("excludedCount").textContent = "0";
         }
     });
 
@@ -138,4 +154,17 @@ function updateAfterResult(tr, resultText) {
     // disable buttons
     tr.querySelector(".winBtn").disabled = true;
     tr.querySelector(".lossBtn").disabled = true;
+}
+
+/**
+ * Update session summary counts
+ */
+function updateSessionSummary(gamesArray) {
+    let accepted = gamesArray.filter(g => g.status === "accept").length;
+    let warn = gamesArray.filter(g => g.status === "warn").length;
+    let excluded = gamesArray.filter(g => g.status === "exclude").length;
+
+    document.getElementById("acceptedCount").textContent = accepted;
+    document.getElementById("warnCount").textContent = warn;
+    document.getElementById("excludedCount").textContent = excluded;
 }
