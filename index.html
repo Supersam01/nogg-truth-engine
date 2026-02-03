@@ -1,1 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NO GG Truth Engine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <header>
+    <h1>NO GG Truth Engine</h1>
+    <p class="subtitle">
+      Calculation-first • History-aware • Discipline-driven
+    </p>
+  </header>
+
+  <!-- CONTROLS -->
+  <section class="controls">
+    <button id="decideBtn">DECIDE</button>
+    <button id="resetBtn">RESET SESSION</button>
+  </section>
+
+  <!-- GAMES TABLE -->
+  <section class="games-section">
+    <table id="gamesTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>BTTS No</th>
+          <th>U2.5</th>
+          <th>U1.5</th>
+          <th>Home O0.5</th>
+          <th>Away O0.5</th>
+          <th>Home CS</th>
+          <th>Away CS</th>
+          <th>Handicap</th>
+          <th>Status</th>
+          <th>Decision</th>
+          <th>Rank</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <!-- 10 GAME ROWS -->
+        <!-- Each row is identical except index -->
+        <!-- JS will later read inputs by class name -->
+
+        <!-- GAME ROW TEMPLATE -->
+        <!-- Repeat 10 times -->
+        <script>
+          for (let i = 1; i <= 10; i++) {
+            document.write(`
+            <tr data-game="${i}">
+              <td>${i}</td>
+
+              <td><input class="bttsNo" type="number" step="0.01"></td>
+              <td><input class="u25" type="number" step="0.01"></td>
+              <td><input class="u15" type="number" step="0.01"></td>
+              <td><input class="home05" type="number" step="0.01"></td>
+              <td><input class="away05" type="number" step="0.01"></td>
+              <td><input class="homeCS" type="number" step="0.01"></td>
+              <td><input class="awayCS" type="number" step="0.01"></td>
+              <td><input class="handicap" type="number" step="0.01"></td>
+
+              <td class="status">—</td>
+              <td class="decision">—</td>
+              <td class="rank">—</td>
+
+              <td class="result">
+                <button class="winBtn" disabled>WIN</button>
+                <button class="lossBtn" disabled>LOSS</button>
+              </td>
+            </tr>
+            `);
+          }
+        </script>
+
+      </tbody>
+    </table>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <small>
+      Calculation always leads. History only confirms or warns.
+    </small>
+  </footer>
+
+  <!-- JS FILES -->
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/calculator.js"></script>
+  <script src="assets/js/decision.js"></script>
+  <script src="assets/js/database.js"></script>
+  <script src="assets/js/app.js"></script>
+
+</body>
+</html>
 
