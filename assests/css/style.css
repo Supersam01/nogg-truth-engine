@@ -1,1 +1,109 @@
+/* RESET & BODY */
+* { box-sizing: border-box; margin:0; padding:0; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    line-height: 1.4;
+    padding: 10px;
+}
 
+/* HEADER */
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+header h1 { font-size: 1.8em; color: #00ff88; }
+header .subtitle { font-size: 0.9em; color: #aaa; }
+
+/* CONTROLS */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+.controls button {
+    flex: 1;
+    margin: 5px;
+    padding: 10px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+#decideBtn { background-color: #00ff88; color: #121212; }
+#resetBtn { background-color: #ff4444; color: #fff; }
+.controls button:hover { opacity: 0.85; }
+
+/* TABLE */
+.games-section { overflow-x: auto; }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+th, td {
+    border: 1px solid #333;
+    padding: 6px;
+    text-align: center;
+    font-size: 0.85em;
+}
+th { background-color: #1e1e1e; color: #00ff88; position: sticky; top: 0; z-index: 2; }
+
+/* INPUT FIELDS */
+input {
+    width: 60px;
+    padding: 4px;
+    border-radius: 5px;
+    border: 1px solid #555;
+    text-align: center;
+    background-color: #222;
+    color: #fff;
+}
+input:focus { outline: 2px solid #00ff88; }
+
+/* STATUS COLORS */
+.status { font-weight: bold; }
+.status.accept { color: #00ff88; }
+.status.warn { color: #ffaa00; }
+.status.exclude { color: #888; text-decoration: line-through; }
+
+/* DECISION LABELS */
+.decision { font-weight: bold; }
+.decision.calc { color: #00ff88; }
+.decision.calcHist { color: #00ffff; }
+.decision.warn { color: #ffaa00; }
+
+/* RANK */
+.rank { font-weight: bold; }
+
+/* RESULT BUTTONS */
+.result button {
+    margin: 2px;
+    padding: 5px 8px;
+    font-size: 0.75em;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.winBtn { background-color: #00ff88; color: #121212; }
+.lossBtn { background-color: #ff4444; color: #fff; }
+.result button:disabled { opacity: 0.3; cursor: not-allowed; }
+.result button:hover:not(:disabled) { opacity: 0.85; }
+
+/* FOOTER */
+footer { margin-top: 15px; text-align: center; font-size: 0.8em; color: #aaa; }
+
+/* RESPONSIVE TABLE */
+@media screen and (max-width: 768px) {
+    table { min-width: 700px; }
+    input { width: 50px; padding: 3px; }
+    .controls button { font-size: 0.9em; padding: 8px; }
+}
+@media screen and (max-width: 480px) {
+    table { min-width: 600px; font-size: 0.75em; }
+    input { width: 45px; }
+}
