@@ -1,62 +1,53 @@
 /**
  * DECISION.JS
- * The final arbiter of status, rank, and labeling.
+ * Final ranking and status determination.
  */
 
 const Decision = {
-    // Thresholds for the "Truth" logic
-    THRESHOLDS: {
-        EXCLUDE: 0.03, // Under 3% value difference = Ignore
-        ACCEPT: 0.07,  // Over 7% value difference = High Confidence
-        HISTORY_BOOST: 0.15 // 15% rank boost for proven patterns
-    },
+    // The "Engine Standards" for what makes a good pick
+    MIN_EDGE: 0.04,   // 4% difference needed to even consider
+    STRONG_EDGE: 0.08, // 8% difference triggers "ACCEPT" status
 
     /**
-     * Determines if a game is 'accept', 'warn', or 'exclude'
+     * Assigns the status based on the confidence score
      */
-    getStatus: (confidence) => {
-        if (confidence >= Decision.THRESHOLDS.ACCEPT) return 'accept';
-        if (confidence >= Decision.THRESHOLDS.EXCLUDE) return 'warn';
+    getStatus: (confidence, history) => {
+        // Boost confidence if history confirms this pattern wins
+        let finalScore = confidence;
+        if (history.confirmed) finalScore += 0.05;
+
+        if (finalScore >= Decision.STRONG_EDGE) return 'accept';
+        if (finalScore >= Decision.MIN_EDGE) return 'warn';
         return 'exclude';
     },
 
     /**
-     * Generates the rank score using confidence and history
-     */
-    getRankScore: (confidence, history) => {
-        let score = confidence;
-        
-        // If history confirms the pattern is a winner, boost the rank
-        if (history.exists && history.confirmed) {
-            score += Decision.THRESHOLDS.HISTORY_BOOST;
-        }
-        
-        return score;
-    },
-
-    /**
-     * Processes the entire array of games to rank them against each other
+     * Ranks all active games from highest confidence to lowest
      */
     rankGames: (games) => {
-        // 1. Calculate scores and status for all
-        games.forEach(game => {
-            game.status = Decision.getStatus(game.confidence);
-            game.rankScore = Decision.getRankScore(game.confidence, game.history);
+        // 1. Determine status and score for each
+        games.forEach(g => {
+            g.status = Decision.getStatus(g.confidence, g.history);
+            // Sorting score includes history bonus
+            g.sortScore = g.confidence + (g.history.confirmed ? 0.1 : 0);
         });
 
-        // 2. Sort by rankScore (highest first)
-        const sorted = [...games].sort((a, b) => b.rankScore - a.rankScore);
+        // 2. Filter out the trash and sort the rest
+        const activeOnes = games
+            .filter(g => g.status !== 'exclude')
+            .sort((a, b) => b.sortScore - a.sortScore);
 
-        // 3. Assign numerical ranks to the sorted list
-        sorted.forEach((game, index) => {
-            if (game.status !== 'exclude') {
-                game.rank = index + 1;
-            } else {
-                game.rank = '—';
-            }
+        // 3. Map ranks back to the original objects
+        activeOnes.forEach((g, index) => {
+            g.rank = index + 1;
         });
 
-        return sorted;
+        // 4. Handle excluded games
+        games.forEach(g => {
+            if (g.status === 'exclude') g.rank = '—';
+        });
+
+        return games;
     }
 };
 
