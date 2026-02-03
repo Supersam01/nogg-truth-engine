@@ -3,43 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NO GG Truth Engine</title>
+    <title>NO GG Truth Engine | Console</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-    <div class="app-wrapper">
+    <div class="engine-container">
         <header>
-            <h1>NO GG <span class="accent">TRUTH ENGINE</span></h1>
-            <div class="summary-bar">
-                <div class="stat">ACCEPTED: <span id="accCount">0</span></div>
-                <div class="stat">EXCLUDED: <span id="exCount">0</span></div>
+            <h1>NO GG <span style="color: #fff;">TRUTH ENGINE</span></h1>
+            
+            <div class="session-stats" style="display: flex; justify-content: center; gap: 30px; margin-top: 10px;">
+                <div style="color: var(--success)">ACCEPTED: <span id="accCount">0</span></div>
+                <div style="color: var(--danger)">EXCLUDED: <span id="exCount">0</span></div>
             </div>
         </header>
 
-        <nav class="toolbar">
-            <button id="decideBtn" class="btn-main">RUN ENGINE</button>
-            <button id="resetBtn" class="btn-sub">RESET</button>
-        </nav>
+        <div class="main-controls" style="display: flex; justify-content: center; gap: 20px; margin-bottom: 40px;">
+            <button id="decideBtn" class="primary-btn" style="background: var(--accent); color: #000; padding: 15px 40px; border-radius: 8px; font-size: 1.1rem;">RUN ANALYSIS</button>
+            <button id="resetBtn" class="secondary-btn" style="background: transparent; color: #fff; border: 1px solid var(--border); padding: 15px 30px; border-radius: 8px;">RESET SESSION</button>
+        </div>
 
-        <main class="engine-room">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>BTTS NO</th>
-                        <th>U2.5 / U1.5</th>
-                        <th>H / A 0.5</th>
-                        <th>HANDICAP</th>
-                        <th>STATUS</th>
-                        <th>RANK</th>
-                        <th>OUTCOME</th>
-                    </tr>
-                </thead>
-                <tbody id="gameBody">
-                    </tbody>
-            </table>
-        </main>
+        <main id="gameBody">
+            </main>
     </div>
 
     <script src="assets/js/utils.js"></script>
